@@ -119,7 +119,16 @@ def insert_sample_data():
                        (1, 'لابتوب مستعمل', 'لابتوب بحالة ممتازة للبيع', 1500, '091-yyyyyyy'))
         db.commit()
 
+def setup_database():
+    with app.app_context():
+        db = get_db()
+        with app.open_resource('schema.sql', mode='r') as f:
+            db.cursor().executescript(f.read())
+        db.commit()
+        insert_sample_data()
+
 if __name__ == '__main__':
-    init_db()
-    insert_sample_data()
+    import os
+    if not os.path.exists(DATABASE):
+        setup_database()
     app.run(debug=True)
